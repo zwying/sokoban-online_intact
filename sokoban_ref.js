@@ -381,12 +381,12 @@ class SokobanGame {
         `;
         
         modalContent.innerHTML = `
-            <h2 style="margin-bottom: 20px; color: #2c3e50;">Welcome to Sokoban!</h2>
-            <p style="margin-bottom: 20px; color: #7f8c8d;">You will need to complete some practice games before you can start the main games.</p>
-            <p style="margin-bottom: 20px; color: #7f8c8d;">Please enter your name to start the practice.</p>
-            <input type="text" id="participant-name-input" placeholder="Enter your name" 
+            <h2 style="margin-bottom: 20px; color: #2c3e50;">欢迎来到Sokoban推箱子游戏!</h2>
+            <p style="margin-bottom: 20px; color: #7f8c8d;">在正式游戏前，请先完成练习关卡</p>
+            <p style="margin-bottom: 20px; color: #7f8c8d;">输入昵称（游戏编号）以进入游戏：</p>
+            <input type="text" id="participant-name-input" placeholder="昵称（游戏编号）" 
                    style="width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 16px; margin-bottom: 20px;">
-            <button id="start-game-btn" class="btn btn-primary" style="width: 100%;">Start Practice</button>
+            <button id="start-game-btn" class="btn btn-primary" style="width: 100%;">开始练习关卡</button>
         `;
         
         modal.appendChild(modalContent);
@@ -411,7 +411,7 @@ class SokobanGame {
                 document.body.removeChild(modal);
                 this.loadLevel(1);
             } else {
-                alert('Please enter your name to continue.');
+                alert('请正确输入昵称（编号）！');
                 nameInput.focus();
             }
         });
@@ -1040,7 +1040,7 @@ class SokobanGame {
         let levelDisplay = '';
         if (this.currentLevel <= 3) {
             // Practice levels
-            levelDisplay = `Practice ${this.currentLevel}`;
+            levelDisplay = `练习关卡 ${this.currentLevel}`;
         } else {
             // Main game levels (4-38 map to 1-35, but display in sequential order)
             const mainGameLevel = this.currentLevel - 3;

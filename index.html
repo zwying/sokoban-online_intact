@@ -489,15 +489,16 @@
 <body>
     <div class="game-container">
         <div class="game-header">
-            <h1 class="game-title">🎮 Sokoban Puzzle</h1>
+            <h1 class="game-title">🎮 Sokoban 推箱子游戏</h1>
         </div>
         
         <div class="instructions" id="how-to-play">
-            <h3>🎯 How to Play</h3>
+            <h3>🎯 游戏玩法</h3>
             <ul>
-                <li>Use <strong>Arrow Keys</strong> to move the player <span style="color: red; font-size: 16px; font-weight: bold; margin: 0 4px;">★</span> or push boxes <span style="display: inline-block; width: 16px; height: 16px; background: #8fbc8f; border: 1px solid #cccccc; vertical-align: middle; margin: 0 4px;"></span> to the targets <span style="color: #e74c3c; font-size: 16px; font-weight: bold; margin: 0 4px;">✕</span>.</li>
-                <li>Press <strong>R</strong> to restart the game. You need to complete each game within <strong>10 restarts</strong>. Otherwise, you will automatically move to the next game.</li>
-                <li>Now, you will play <strong>3 games</strong> for <strong>practice</strong>. After that, you will have <strong>35 main games</strong> to complete!</li>
+                <li>使用 <strong>箭头键（或“AWSD"键）</strong> 移动人物 <span style="color: red; font-size: 16px; font-weight: bold; margin: 0 4px;">★</span>，将所有箱子 <span style="display: inline-block; width: 16px; height: 16px; background: #8fbc8f; border: 1px solid #cccccc; vertical-align: middle; margin: 0 4px;"></span> 推至目标位置<span style="color: #e74c3c; font-size: 16px; font-weight: bold; margin: 0 4px;">✕</span>.</li>
+                
+                <li>按下<strong>“R”</strong>可重置本关游戏。每个关卡有<strong>10次</strong>重置机会，若重置机会耗尽，将自动进入下一关卡。</li>
+                <li>现在，你将先进行<strong>3个练习关卡</strong>的热身，之后会有<strong>24个正式关卡</strong>供你挑战！</li>
             </ul>
         </div>
         
@@ -505,12 +506,12 @@
             <div class="controls-right">
                 <div class="game-stats">
                     <div class="stat-item">
-                        <span class="stat-label">Game:</span>
-                        <span class="stat-value" id="current-level">Practice 1</span>
+                        <span class="stat-label">游戏进度：</span>
+                        <span class="stat-value" id="current-level">练习关卡 1</span>
                     </div>
                     <div class="stat-divider">|</div>
                     <div class="stat-item">
-                        <span class="stat-label">Restarts Left:</span>
+                        <span class="stat-label">本关剩余重置次数：</span>
                         <span class="stat-value" id="restart-count">10</span>
                     </div>
                 </div>
@@ -527,27 +528,27 @@
         
         <div class="game-info">
             <div class="legend">
-                <h3>📋 Game Elements</h3>
+                <h3>📋 游戏图示</h3>
                 <div class="legend-grid">
                     <div class="legend-item">
                         <div class="legend-symbol" style="background: #f8f9fa; color: red; border: 1px solid #cccccc;">★</div>
-                        <span class="legend-text">Player</span>
+                        <span class="legend-text">人物</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-symbol" style="background: #8fbc8f; border: 1px solid #cccccc;"></div>
-                        <span class="legend-text">Box</span>
+                        <span class="legend-text">箱子</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-symbol" style="background: #f8f9fa; color: #e74c3c; border: 1px solid #cccccc;">✕</div>
-                        <span class="legend-text">Target</span>
+                        <span class="legend-text">目标位置</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-symbol" style="background: #444444; border: 1px solid #333333;"></div>
-                        <span class="legend-text">Wall</span>
+                        <span class="legend-text">墙</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-symbol" style="background: #87ceeb; border: 1px solid #cccccc;"></div>
-                        <span class="legend-text">Box on Target</span>
+                        <span class="legend-text">就位箱子</span>
                     </div>
                 </div>
             </div>
@@ -556,19 +557,19 @@
     
     <div id="level-complete" class="completion-messages">
         <div class="message">
-            🎉 Congratulations! Game completed! 🎉<br>
-            <small>Moves: <span id="final-moves">0</span></small><br><br>
-            <small>Moving to next game automatically...</small>
+            🎉 恭喜完成本关挑战！🎉<br>
+            <small>步数：<span id="final-moves">0</span></small><br><br>
+            <small>请在准备好后，进入下一关卡...</small>
         </div>
     </div>
     
     <div id="game-complete" class="completion-messages">
         <div class="message">
-            🏆 Congratulations! 🏆<br>
-            You've completed all 35 games!<br>
-            <small>Successful Games: <span id="success-levels">35</span>/35</small><br><br>
-            <small>Your data has been automatically saved.</small><br>
-            <strong>You may now close this window.</strong>
+            🏆 恭喜！ 🏆<br>
+             你已完成所有挑战！<br>
+            <small>过关数量： <span id="success-levels">35</span>/35</small><br><br>
+            <small>您的游戏数据已自动保存，</small><br>
+            <strong>可关闭此窗口。</strong>
         </div>
     </div>
     
@@ -592,17 +593,17 @@
             max-width: 400px;
             width: 90%;
         ">
-            <h2 style="margin-bottom: 20px; color: #2c3e50;">🎯 Practice completed! 🎯</h2>
-            <p style="margin-bottom: 20px; color: #7f8c8d;">If you are ready for the main games, please click the below button to continue.</p>
-            <button id="continue-main-game-btn" class="btn btn-primary" style="width: 100%;">Continue to Main Game</button>
+            <h2 style="margin-bottom: 20px; color: #2c3e50;">🎯 练习结束！ 🎯</h2>
+            <p style="margin-bottom: 20px; color: #7f8c8d;">准备完毕后，点击下方按钮以继续游戏</p>
+            <button id="continue-main-game-btn" class="btn btn-primary" style="width: 100%; display: block; margin: 0 auto;">开始正式游戏</button>
         </div>
     </div>
     
     <div id="level-failure" class="completion-messages">
         <div class="message" style="background: linear-gradient(45deg, #e74c3c, #c0392b);">
-            ❌ Game Failed! ❌<br>
-            No restart chances remaining (0/10)<br>
-            <small id="failure-message">Moving to next game automatically...</small>
+            ❌ 本关挑战失败❌<br>
+            重开次数已耗尽 (0/10)<br>
+            <small id="failure-message">自动进入下一关...</small>
         </div>
     </div>
 
