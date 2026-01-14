@@ -881,19 +881,6 @@ class SokobanGame {
                 practiceCompleteDiv.style.display = 'flex';
                 // Don't auto-advance, wait for user to click continue button
             } else {
-//                // Set transition flag to block all events during success transition
-//                this.isTransitioning = true;
-//                levelCompleteDiv.style.display = 'block';
-//                // Auto-advance to next level after 1 second
-//                console.log(`Setting timeout to auto-advance from successful level ${this.currentLevel} in 1 second`);
-//                setTimeout(() => {
-//                    console.log(`Timeout triggered - attempting to auto-advance from successful level ${this.currentLevel}`);
-//                    levelCompleteDiv.style.display = 'none';
-//                    // Directly load the next level
-//                    const nextLevelNum = this.currentLevel + 1;
-//                    console.log(`Directly loading level ${nextLevelNum}`);
-//                    this.loadLevel(nextLevelNum);
-//                }, 1000);
                 console.log(`level ${this.currentLevel} completed`);
                 // Set transition flag to block all events during success transition
                 this.isTransitioning = true;
@@ -945,18 +932,24 @@ class SokobanGame {
                 gameCompleteDiv.style.display = 'block';
             }, 500);
         } else {
-            // Show failure message
-            failureDiv.style.display = 'block';
             // Auto-advance to next level after 1 second
-            console.log(`Setting timeout to auto-advance from level ${this.currentLevel} in 1 second`);
-            setTimeout(() => {
-                console.log(`Timeout triggered - attempting to auto-advance from level ${this.currentLevel}`);
-                failureDiv.style.display = 'none';
-                // Directly load the next level
-                const nextLevelNum = this.currentLevel + 1;
-                console.log(`Directly loading level ${nextLevelNum}`);
-                this.loadLevel(nextLevelNum);
-            }, 1000);
+            console.log(`Failure in level ${this.currentLevel}, wait for user to click continue button`);
+            this.isTransitioning = true;
+            // Show failure message
+            failureDiv.style.display = 'flex';
+            
+//            // Show failure message
+//            failureDiv.style.display = 'block';
+//            // Auto-advance to next level after 1 second
+//            console.log(`Setting timeout to auto-advance from level ${this.currentLevel} in 1 second`);
+//            setTimeout(() => {
+//                console.log(`Timeout triggered - attempting to auto-advance from level ${this.currentLevel}`);
+//                failureDiv.style.display = 'none';
+//                // Directly load the next level
+//                const nextLevelNum = this.currentLevel + 1;
+//                console.log(`Directly loading level ${nextLevelNum}`);
+//                this.loadLevel(nextLevelNum);
+//            }, 1000);
         }
     }
     
@@ -985,7 +978,7 @@ class SokobanGame {
     
     goToNextLevel(){
         console.log(`next level button clicked`);
-        console.log(`advance into level ${this.currentLevel}`);
+        console.log(`advance into level ${this.currentLevel+1}`);
         const levelCompleteDiv = document.getElementById('level-complete');
         levelCompleteDiv.style.display = 'none';
         
