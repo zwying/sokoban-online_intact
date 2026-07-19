@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sokoban Web Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .level-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        select {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .game-canvas {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: #2c3e50;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .instructions {
+            margin-top: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .win-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            display: none;
+            animation: celebration 0.5s ease-out;
+        }
+
+        @keyframes celebration {
+            0% { 
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-symbol {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            text-align: center;
+            line-height: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎮 Sokoban Puzzle Game</h1>
+        
+        <div class="controls">
+            <div class="level-selector">
+                <label for="levelSelect">Level:</label>
+                <select id="levelSelect">
+                    <!-- Levels will be populated by JavaScript -->
+                </select>
+            </div>
+            
+            <div class="game-info">
+                <div>Moves: <span id="moveCounter">0</span></div>
+            </div>
+            
+            <button id="resetButton">🔄 Reset</button>
+        </div>
+        
+        <canvas id="gameCanvas" class="game-canvas" width="600" height="600"></canvas>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-symbol" style="background: #e74c3c; color: white;">☺</div>
+                <span>Player</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-symbol" style="background: #3498db; color: white;">■</div>
+                <span>Box</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-symbol" style="background: #f39c12; color: white;">⚬</div>
+                <span>Target</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-symbol" style="background: #95a5a6; color: white;">█</div>
+                <span>Wall</span>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 How to Play</h3>
+            <p>Use <strong>WASD</strong> or <strong>Arrow Keys</strong> to move the player</p>
+            <p>Push all boxes onto the target positions to complete the level!</p>
+            <p>Press <strong>R</strong> to reset the current level</p>
+        </div>
+    </div>
+    
+    <div id="winMessage" class="win-message">
+        🎉 Congratulations! 🎉<br>
+        Level completed!
+    </div>
+
+    <script src="sokoban.js"></script>
+</body>
+</html>

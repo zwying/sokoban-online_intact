@@ -3,36 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sokoban Web Game</title>
+    <title>Sokoban · C/WASM</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             color: white;
         }
-
         .game-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         h1 {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
+            margin-bottom: 5px;
+            font-size: 2em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-
+        .subtitle {
+            text-align: center;
+            color: #8ab4f8;
+            font-size: 0.85em;
+            margin-bottom: 20px;
+        }
         .controls {
             display: flex;
             justify-content: space-between;
@@ -41,13 +44,7 @@
             gap: 20px;
             flex-wrap: wrap;
         }
-
-        .level-selector {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .level-selector { display: flex; align-items: center; gap: 10px; }
         select {
             padding: 8px 12px;
             border: none;
@@ -57,24 +54,18 @@
             font-size: 16px;
             cursor: pointer;
         }
-
         button {
             padding: 10px 20px;
             border: none;
             border-radius: 8px;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            background: linear-gradient(45deg, #e94560, #c23152);
             color: white;
             font-size: 16px;
             cursor: pointer;
             transition: transform 0.2s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
+        button:hover { transform: translateY(-2px); }
         .game-info {
             display: flex;
             gap: 30px;
@@ -82,25 +73,21 @@
             font-size: 18px;
             font-weight: bold;
         }
-
         .game-canvas {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            background: #2c3e50;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: #1a1a2e;
             display: block;
             margin: 0 auto;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
-
         .instructions {
             margin-top: 20px;
             text-align: center;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             padding: 15px;
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .win-message {
             position: fixed;
             top: 50%;
@@ -113,23 +100,10 @@
             font-size: 24px;
             font-weight: bold;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
             z-index: 1000;
             display: none;
-            animation: celebration 0.5s ease-out;
         }
-
-        @keyframes celebration {
-            0% { 
-                transform: translate(-50%, -50%) scale(0.5);
-                opacity: 0;
-            }
-            100% { 
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-        }
-
         .legend {
             display: flex;
             justify-content: center;
@@ -137,76 +111,262 @@
             margin-top: 15px;
             font-size: 14px;
         }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .legend-item { display: flex; align-items: center; gap: 8px; }
         .legend-symbol {
-            width: 20px;
-            height: 20px;
-            border-radius: 3px;
-            text-align: center;
-            line-height: 20px;
-            font-weight: bold;
+            width: 20px; height: 20px; border-radius: 3px;
+            text-align: center; line-height: 20px; font-weight: bold;
         }
+        .loading { text-align: center; padding: 40px; font-size: 18px; }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>🎮 Sokoban Puzzle Game</h1>
-        
+        <h1>🎮 Sokoban · 不眨眼</h1>
+        <div class="subtitle">C engine · WebAssembly</div>
+
         <div class="controls">
             <div class="level-selector">
                 <label for="levelSelect">Level:</label>
-                <select id="levelSelect">
-                    <!-- Levels will be populated by JavaScript -->
-                </select>
+                <select id="levelSelect"></select>
             </div>
-            
             <div class="game-info">
                 <div>Moves: <span id="moveCounter">0</span></div>
             </div>
-            
             <button id="resetButton">🔄 Reset</button>
         </div>
-        
-        <canvas id="gameCanvas" class="game-canvas" width="600" height="600"></canvas>
-        
+
+        <div id="loadingArea" class="loading">Loading WASM engine...</div>
+        <canvas id="gameCanvas" class="game-canvas" style="display:none"></canvas>
+
         <div class="legend">
             <div class="legend-item">
-                <div class="legend-symbol" style="background: #e74c3c; color: white;">☺</div>
+                <div class="legend-symbol" style="background:#e74c3c;color:white;">@</div>
                 <span>Player</span>
             </div>
             <div class="legend-item">
-                <div class="legend-symbol" style="background: #3498db; color: white;">■</div>
+                <div class="legend-symbol" style="background:#3498db;color:white;">$</div>
                 <span>Box</span>
             </div>
             <div class="legend-item">
-                <div class="legend-symbol" style="background: #f39c12; color: white;">⚬</div>
-                <span>Target</span>
+                <div class="legend-symbol" style="background:#27ae60;color:white;">$</div>
+                <span>On Target</span>
             </div>
             <div class="legend-item">
-                <div class="legend-symbol" style="background: #95a5a6; color: white;">█</div>
+                <div class="legend-symbol" style="background:#7f8c8d;color:white;">#</div>
                 <span>Wall</span>
             </div>
+            <div class="legend-item">
+                <div class="legend-symbol" style="background:#f39c12;color:white;">·</div>
+                <span>Target</span>
+            </div>
         </div>
-        
+
         <div class="instructions">
             <h3>📋 How to Play</h3>
-            <p>Use <strong>WASD</strong> or <strong>Arrow Keys</strong> to move the player</p>
-            <p>Push all boxes onto the target positions to complete the level!</p>
-            <p>Press <strong>R</strong> to reset the current level</p>
+            <p>Use <strong>WASD</strong> or <strong>Arrow Keys</strong> to move</p>
+            <p>Push all boxes onto the target positions!</p>
+            <p>Press <strong>R</strong> to reset, <strong>N/P</strong> for next/prev level</p>
         </div>
     </div>
-    
+
     <div id="winMessage" class="win-message">
-        🎉 Congratulations! 🎉<br>
-        Level completed!
+        🎉 Congratulations! 🎉<br>Level completed!
     </div>
 
-    <script src="sokoban.js"></script>
+    <script>
+    // ═════════════════════════════════════════════════════════
+    //  WASM Sokoban — rendering & input glue
+    // ═════════════════════════════════════════════════════════
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const moveCounter = document.getElementById('moveCounter');
+    const levelSelect = document.getElementById('levelSelect');
+    const winMessage = document.getElementById('winMessage');
+    const loadingArea = document.getElementById('loadingArea');
+    const CELL = 40;  // pixel size per cell
+
+    let wasm = null;
+    let gameOver = false;
+
+    // ── Render ──────────────────────────────────────────
+
+    const COLORS = {
+        0: '#1a1a2e',  // floor
+        1: '#4a5568',  // wall
+        2: '#f39c12',  // target
+        3: '#e74c3c',  // player
+        4: '#3498db',  // box
+        5: '#27ae60',  // box on target
+    };
+
+    const SYMBOLS = {
+        0: '',     // floor
+        1: '',     // wall (filled rect)
+        2: '',     // target (dot)
+        3: '☺',    // player
+        4: '',     // box
+        5: '',     // box on target
+    };
+
+    function render() {
+        if (!wasm) return;
+        const rows = wasm._wasm_rows();
+        const cols = wasm._wasm_cols();
+        canvas.width  = cols * CELL;
+        canvas.height = rows * CELL;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const type = wasm._wasm_get_cell(r, c);
+                const x = c * CELL, y = r * CELL;
+
+                // Fill background
+                ctx.fillStyle = COLORS[type] || '#1a1a2e';
+                ctx.fillRect(x, y, CELL, CELL);
+
+                // Grid lines
+                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                ctx.lineWidth = 0.5;
+                ctx.strokeRect(x, y, CELL, CELL);
+
+                // Draw specifics
+                if (type === 1) {
+                    // Wall — darker inner
+                    ctx.fillStyle = '#2d3748';
+                    ctx.fillRect(x + 1, y + 1, CELL - 2, CELL - 2);
+                } else if (type === 2) {
+                    // Target — circle
+                    ctx.fillStyle = '#e67e22';
+                    ctx.beginPath();
+                    ctx.arc(x + CELL/2, y + CELL/2, CELL/5, 0, 2 * Math.PI);
+                    ctx.fill();
+                } else if (type === 3) {
+                    // Player — circle with face
+                    ctx.fillStyle = '#c0392b';
+                    ctx.beginPath();
+                    ctx.arc(x + CELL/2, y + CELL/2, CELL/2.5, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 18px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('☺', x + CELL/2, y + CELL/2 + 7);
+                } else if (type === 4 || type === 5) {
+                    // Box — rounded rect
+                    const pad = 4;
+                    const bx = x + pad, by = y + pad;
+                    const bw = CELL - pad * 2, bh = CELL - pad * 2;
+                    ctx.fillStyle = type === 5 ? '#229954' : '#2980b9';
+                    ctx.beginPath();
+                    ctx.roundRect(bx, by, bw, bh, 4);
+                    ctx.fill();
+                    ctx.strokeStyle = type === 5 ? '#1e8449' : '#1a5276';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+        }
+    }
+
+    function updateUI() {
+        if (!wasm) return;
+        moveCounter.textContent = wasm._wasm_moves();
+    }
+
+    // ── Level management ─────────────────────────────────
+
+    function populateLevels() {
+        const count = wasm._wasm_level_count();
+        levelSelect.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const namePtr = wasm._wasm_level_name(i);
+            const name = wasm.UTF8ToString(namePtr);
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = name.replace('prb_', 'Level ');
+            levelSelect.appendChild(option);
+        }
+    }
+
+    function loadLevel(idx) {
+        wasm._wasm_load_level(idx);
+        levelSelect.value = idx;
+        gameOver = false;
+        winMessage.style.display = 'none';
+        updateUI();
+        render();
+    }
+
+    // ── Input ────────────────────────────────────────────
+
+    function handleMove(dr, dc) {
+        if (gameOver || !wasm) return;
+        const moved = wasm._wasm_step(dr, dc);
+        if (moved) {
+            updateUI();
+            render();
+            if (wasm._wasm_solved()) {
+                gameOver = true;
+                winMessage.style.display = 'block';
+                setTimeout(() => { winMessage.style.display = 'none'; }, 3000);
+            }
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (gameOver && e.key !== 'r' && e.key !== 'R') return;
+        switch (e.key.toLowerCase()) {
+            case 'w': case 'arrowup':    e.preventDefault(); handleMove(-1, 0); break;
+            case 's': case 'arrowdown':  e.preventDefault(); handleMove( 1, 0); break;
+            case 'a': case 'arrowleft':  e.preventDefault(); handleMove( 0,-1); break;
+            case 'd': case 'arrowright': e.preventDefault(); handleMove( 0, 1); break;
+            case 'r': e.preventDefault(); wasm._wasm_reset(); gameOver = false;
+                      winMessage.style.display = 'none'; updateUI(); render(); break;
+            case 'n': {
+                const next = parseInt(levelSelect.value) + 1;
+                if (next < wasm._wasm_level_count()) loadLevel(next);
+                break;
+            }
+            case 'p': {
+                const prev = parseInt(levelSelect.value) - 1;
+                if (prev >= 0) loadLevel(prev);
+                break;
+            }
+        }
+    });
+
+    levelSelect.addEventListener('change', (e) => loadLevel(parseInt(e.target.value)));
+    document.getElementById('resetButton').addEventListener('click', () => {
+        wasm._wasm_reset(); gameOver = false;
+        winMessage.style.display = 'none'; updateUI(); render();
+    });
+    winMessage.addEventListener('click', () => { winMessage.style.display = 'none'; });
+
+    // ── Bootstrap WASM ────────────────────────────────────
+
+    const wasmScript = document.createElement('script');
+    wasmScript.src = 'sokoban_wasm.js';
+    wasmScript.onload = () => {
+        // The Emscripten-generated JS will define Module
+    };
+    document.head.appendChild(wasmScript);
+
+    // Override Emscripten's onRuntimeInitialized
+    var Module = {
+        onRuntimeInitialized: function() {
+            wasm = Module;
+            if (!wasm._wasm_init()) {
+                loadingArea.textContent = 'Failed to load levels.';
+                return;
+            }
+            loadingArea.style.display = 'none';
+            canvas.style.display = 'block';
+            populateLevels();
+            updateUI();
+            render();
+        }
+    };
+    </script>
 </body>
 </html>
