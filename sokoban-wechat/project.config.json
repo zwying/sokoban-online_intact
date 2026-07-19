@@ -1,0 +1,16 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "sokoban-wechat",
+  "description": "推箱子 · 不眨眼 — WeChat Mini Game",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true
+  },
+  "compileType": "game",
+  "libVersion": "3.5.5",
+  "condition": {}
+}
