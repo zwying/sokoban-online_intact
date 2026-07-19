@@ -34,6 +34,10 @@ Thumbs.db
 logs
 *.log
 
+# C build artifacts
+sokoban-c/obj/
+sokoban-c/sokoban
+
 # Deployment
 .vercel
 .netlify
